@@ -5,6 +5,8 @@ import numpy as np
 import pandas as pd
 
 data = np.load('dataset_training_320.npy', allow_pickle=True)
+'''dataset_training_320 uses 3 parameters for the 5*64 audio files, dataset_training uses 2 parameters 
+for 5*1000 audio files, dataset_training_wrong uses 3 parameters for 5*1000 audio files'''
 
 parameter1 = []
 
