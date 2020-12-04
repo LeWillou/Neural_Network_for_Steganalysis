@@ -1,12 +1,28 @@
+'''Modules import'''
 from tensorflow.keras.layers import Dense, Dropout, Flatten
 from tensorflow.keras import Sequential
 from tensorflow.keras.optimizers import Adam
 import numpy as np
 import pandas as pd
 
-data = np.load('dataset_training_320.npy', allow_pickle=True)
-'''dataset_training_320 uses 3 parameters for the 5*64 audio files, dataset_training uses 2 parameters 
-for 5*1000 audio files, dataset_training_wrong uses 3 parameters for 5*1000 audio files'''
+
+
+'''--------------------------------------------------------------------------------------------'''
+'''                                      Dataset uploading                                     '''
+'''--------------------------------------------------------------------------------------------'''
+
+
+data = np.load('dataset_training_5000_3_parameters.npy', allow_pickle=True)
+
+# dataset_training_320 uses 3 parameters for the 5*64 audio files, dataset_training uses 2 
+# parameters for 5*1000 audio files, dataset_training_wrong uses 3 parameters for 5*1000 
+# audio files
+
+
+'''--------------------------------------------------------------------------------------------'''
+'''                                  Dataset formating part                                    '''
+'''--------------------------------------------------------------------------------------------'''
+
 
 parameter1 = []
 
@@ -40,20 +56,28 @@ for i in range(len(parameter1)):
 
 input_data = np.array(input_data, dtype=np.float32)
 
-#print(input_data[0][0])
+# print(parameter3)
+
+input_check = pd.DataFrame(parameter3)
+
+for i in range(len(parameter3)):
+    if np.isnan(parameter3[i]).all():
+        print('Problem detected at ' + str(i))
+
+# print(parameter3[1][0])
 
 # input_data = [parameter1, parameter2]
 # input_data = np.array(input_data)
 
 output = np.array(output)
 
-# print(output.shape)
 
-#print(parameter1.shape)
-#print(type(input_data[1][0][1]))
-#print(data[1])
+'''--------------------------------------------------------------------------------------------'''
+'''                                     Neural network part                                    '''
+'''--------------------------------------------------------------------------------------------'''
 
-opt = Adam(lr=0.001, beta_1=0.9, beta_2=0.999)
+
+opt = Adam(lr=0.0001, beta_1=0.9, beta_2=0.999)
 
 model = Sequential()
 
@@ -63,11 +87,8 @@ model.add(Flatten())
 # model.add(Dropout(rate=0.25))
 model.add(Dense(5, activation='softmax'))
 model.compile(optimizer = opt, loss='categorical_crossentropy')
-model.fit(input_data, output, epochs=5000, verbose=1)
+model.fit(input_data, output, epochs=10000, verbose=1)
 
 
-# model.add(Dropout(rate=0.25))
+model.save_weights('nn_weights_3_parameters_low_lr.h5')
 
-model.save_weights('nn_weights_two_parameters.h5')
-
-#soft max à la fin
