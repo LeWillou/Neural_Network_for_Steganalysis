@@ -12,7 +12,7 @@ import pandas as pd
 '''--------------------------------------------------------------------------------------------'''
 
 
-data = np.load('dataset_training_5000_3_parameters.npy', allow_pickle=True)
+data = np.load('dataset_training_5000_signal_noise.npy', allow_pickle=True)
 
 # dataset_training_320 uses 3 parameters for the 5*64 audio files, dataset_training uses 2 
 # parameters for 5*1000 audio files, dataset_training_wrong uses 3 parameters for 5*1000 
@@ -39,6 +39,11 @@ parameter3 = []
 for i in range(len(data[3][0])):
     parameter3.append(data[3][0][i])
 
+parameter4 = []
+
+for i in range(len(data[4][0])):
+    parameter4.append(data[4][0][i])
+
 output = []
 
 for i in range(len(data[2][0])):
@@ -47,11 +52,12 @@ for i in range(len(data[2][0])):
 parameter1 = np.array(parameter1)
 parameter2 = np.array(parameter2)
 parameter3 = np.array(parameter3)
+parameter4 = np.array(parameter4)
 
 input_data = []
 
 for i in range(len(parameter1)):
-    transition_array = [parameter1[i], parameter2[i], parameter3[i]]
+    transition_array = [parameter1[i], parameter2[i], parameter3[i], parameter4[i]]
     input_data.append(transition_array)
 
 input_data = np.array(input_data, dtype=np.float32)
@@ -81,14 +87,14 @@ opt = Adam(lr=0.0001, beta_1=0.9, beta_2=0.999)
 
 model = Sequential()
 
-model.add(Dense(250, input_shape = [3, 99], activation='relu'))
+model.add(Dense(250, input_shape = [4, 199], activation='relu'))
 model.add(Dense(120))
 model.add(Flatten())
-# model.add(Dropout(rate=0.25))
+model.add(Dropout(rate=0.2))
 model.add(Dense(5, activation='softmax'))
 model.compile(optimizer = opt, loss='categorical_crossentropy')
 model.fit(input_data, output, epochs=10000, verbose=1)
 
 
-model.save_weights('nn_weights_3_parameters_low_lr.h5')
+model.save_weights('nn_weights_5000_signal_noise_2.h5')
 

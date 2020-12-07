@@ -7,10 +7,10 @@ import os
 def check_peaks_sample(audioFile):
     sampling_rate, samples = wavfile.read(audioFile)
     peaks_index_array, _ = signal.find_peaks(samples, prominence=1000)
-    for_size = int(peaks_index_array.size/99)
+    for_size = int(peaks_index_array.size/199)
     mean_peaks_array = []
 
-    for i in range(99):
+    for i in range(199):
         mean_peaks_array.append(samples[peaks_index_array[i*for_size:(i+1)*for_size]].mean())
 
     return mean_peaks_array
