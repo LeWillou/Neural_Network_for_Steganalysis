@@ -3,7 +3,7 @@ from scipy import signal, fft
 import numpy as np
 import os
 
-
+'''What if we don't have the proper block ?'''
 def check_phase(audioFile):
     '''Returns phases of given wav file'''
     sampling_rate, samples = wavfile.read(audioFile)

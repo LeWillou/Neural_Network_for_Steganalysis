@@ -8,11 +8,12 @@ import check_phase
 import check_samples
 import os
 import check_signal_to_noise_ratio
+import check_odd_numbers
 
 directories = []
 audio_files = []
 
-original_path = 'wav_stego/Spread Spectrum'
+original_path = '../wav_stego/audio in'
 
 for dirpaths, dirnames, filenames in os.walk(original_path):
     audio_files.append(filenames)
@@ -20,12 +21,12 @@ for dirpaths, dirnames, filenames in os.walk(original_path):
 opt = Adam(lr=0.1, beta_1=0.9, beta_2=0.999)
 
 model = Sequential()
-model.add(Dense(250, input_shape = [4, 199], activation='relu'))
+model.add(Dense(250, input_shape = [5, 199], activation='relu'))
 model.add(Dense(120, activation='relu'))
 model.add(Flatten())
 #model.add(Dropout(rate=0.25))
 model.add(Dense(5, activation='softmax'))
-model.load_weights('nn_weights_5000_signal_noise.h5')
+model.load_weights('nn_weights_5000_5_parameters.h5')
 model.compile(optimizer = opt, loss='categorical_crossentropy')
 
 # audio_file = sys.argv[1]
@@ -56,24 +57,25 @@ for audio_file in audio_files[0]:
     file_phases = check_phase.check_phase(original_path + '/' + audio_file)
     file_samples_peaks = check_samples.check_peaks_sample(original_path + '/' + audio_file)
     file_signal_to_noise = check_signal_to_noise_ratio.check_signal_to_noise(original_path + '/' + audio_file)
-    input_data = [file_freq_peaks, file_phases, file_samples_peaks, file_signal_to_noise]
+    file_odd_numbers = check_odd_numbers.check_odd_numbers(original_path + '/' + audio_file)
+    input_data = [file_freq_peaks, file_phases, file_samples_peaks, file_signal_to_noise, file_odd_numbers]
     input_data = np.array([input_data], dtype=np.float32)
     # print(input_data.shape)
     predicted_results = model.predict(input_data)
 
-    real_result = np.array(spread_spectrum)
+    real_result = np.array(audio_in)
 
     if real_result.argmax() == predicted_results.argmax():
-        print('Found ! ' + str(counter + 1) + ' found so far..., making it ' + str(((counter + 1)/64)*100) + '% correct.')
         counter += 1
+        print('Found ! ' + str(counter) + ' found so far..., making it ' + str((counter/64)*100) + '% correct.')
     else:
         print('Did not find the good one... ' + str(counter) + ' found so far, making it ' + str((counter/64)*100) + '% correct.')
-        # if predicted_results.argmax() == 1:
-        #     print('Echo Hiding found')
-        # elif predicted_results.argmax() == 2:
-        #     print('LSB found')
-        # elif predicted_results.argmax() == 3:
-        #     print('Phase Coding found')
-        # elif predicted_results.argmax() == 4:
-        #     print('Spread Spectrum found')
+        if predicted_results.argmax() == 1:
+            print('Echo Hiding found')
+        elif predicted_results.argmax() == 2:
+            print('LSB found')
+        elif predicted_results.argmax() == 3:
+            print('Phase Coding found')
+        elif predicted_results.argmax() == 4:
+            print('Spread Spectrum found')
 

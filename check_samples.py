@@ -3,7 +3,7 @@ from scipy import signal
 import numpy as np
 import os
 
-
+'''Might be useless'''
 def check_peaks_sample(audioFile):
     sampling_rate, samples = wavfile.read(audioFile)
     peaks_index_array, _ = signal.find_peaks(samples, prominence=1000)
